@@ -16,16 +16,8 @@ type Response struct {
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	response := Response{
-		Code:   200,
-		Result: fmt.Sprintf("%s %s", "hello", r.FormValue("name")),
-	}
-	json, err := json.Marshal(response)
-	if err != nil {
-		log.Fatal(err)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(json)
+	result := fmt.Sprintf("%s %s", "hello", r.FormValue("name"))
+	writeResponse(w, result, http.StatusOK)
 }
 
 func main() {
@@ -38,13 +30,13 @@ func main() {
 func validateName(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if ok := r.URL.Query()["name"]; ok == nil {
-			err := fmt.Errorf("Please provide a name")
+			err := fmt.Sprintf("Please provide a name")
 			writeResponse(w, err, http.StatusBadRequest)
 			return
 		}
 		name := r.FormValue("name")
 		if !isValidName(name) {
-			err := fmt.Errorf("Name has %d character(s).Please provide more than 1 character.", len(name))
+			err := fmt.Sprintf("Name has %d character(s).Please provide more than 1 character.", len(name))
 			writeResponse(w, err, http.StatusBadRequest)
 			return
 		}
@@ -59,13 +51,13 @@ func isValidName(name string) bool {
 	return false
 }
 
-func writeResponse(w http.ResponseWriter, err error, status int) {
+func writeResponse(w http.ResponseWriter, body string, status int) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusBadRequest)
+	w.WriteHeader(status)
 	j, err := json.Marshal(
 		Response{
 			Code:   status,
-			Result: err.Error(),
+			Result: body,
 		})
 	if err != nil {
 		log.Fatal(err)
