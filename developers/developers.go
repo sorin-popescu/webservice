@@ -1,10 +1,10 @@
 package developers
 
 type Developer struct {
-	Name     string
-	Age      int
-	Language string
-	Floor    int
+	Name     string `json:"name"`
+	Age      int    `json:"age"`
+	Language string `json:"language"`
+	Floor    int    `json:"floor"`
 }
 
 func (d *Developer) FindAll() map[int]Developer {
@@ -13,6 +13,12 @@ func (d *Developer) FindAll() map[int]Developer {
 
 func (d *Developer) GetByID(id *int) Developer {
 	return Developers[*id]
+}
+
+func (d *Developer) AddOne(developer *Developer) map[int]Developer {
+	index := len(Developers)
+	Developers[index] = *developer
+	return Developers
 }
 
 var Developers = map[int]Developer{

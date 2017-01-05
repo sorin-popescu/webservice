@@ -19,6 +19,7 @@ func main() {
 	flag.Parse()
 	r := httprouter.New()
 	r.GET("/developers", handlers.GetDevelopers)
+	r.POST("/developers", handlers.AddDeveloper)
 	r.GET("/developers/:id", handlers.GetDeveloperByID)
 	http.ListenAndServe(":"+*port, r)
 }
